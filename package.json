@@ -1,0 +1,36 @@
+{
+  "name": "lettercounter",
+  "version": "0.0.1",
+  "description": "Counts letters, duh!",
+  "private": true,
+  "main": "gulpfile.js",
+  "dependencies": {
+    "jquery": "^2.1.3",
+    "lodash": "^3.10.1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.7.6",
+    "browserify": "^11.0.1",
+    "gulp": "^3.8.11",
+    "gulp-autoprefixer": "^2.3.1",
+    "gulp-if": "^1.2.5",
+    "gulp-jshint": "^1.9.4",
+    "gulp-less": "^3.0.2",
+    "gulp-minify-css": "^1.2.0",
+    "gulp-plumber": "^1.0.0",
+    "gulp-sourcemaps": "^1.5.1",
+    "gulp-uglify": "^1.1.0",
+    "gulp-util": "^3.0.4",
+    "lodash": "^3.9.0",
+    "partialify": "^3.1.5",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0",
+    "watchify": "^3.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ezra Pool",
+  "license": "proprietary"
+}
