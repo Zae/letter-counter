@@ -4,6 +4,7 @@
  http://www.tsdme.nl
  ====================================================================== */
 
+/*globals require, global */
 (function () {
 
     'use strict';
@@ -29,31 +30,31 @@
 
     // ======================================================== after load
 
-    jQuery(function($){
+    jQuery(function ($) {
         var $textarea = $('[name="text"]'),
-            $vowelscount = $('.vowels'),
-            $consonantscount = $('.consonants'),
-            $vowelstop = $('.vowelstop3'),
-            $consonantstop = $('.consonantstop3');
+            $vowelsCount = $('.vowels'),
+            $consonantsCount = $('.consonants'),
+            $vowelsTop = $('.vowelstop3'),
+            $consonantsTop = $('.consonantstop3');
 
-        $textarea.on('change keyup keydown focus blur', function(){
+        $textarea.on('change keyup keydown focus blur', function () {
             var $this = $(this),
                 counted = letterCounter.text($this.val());
 
-                $vowelscount.text(counted.vowels());
-                $consonantscount.text(counted.consonants());
+            $vowelsCount.text(counted.vowels());
+            $consonantsCount.text(counted.consonants());
 
-            $vowelstop.empty();
-            $.each(counted.vowelstop3(), function(key, elem){
-                $vowelstop.append($('<li>', {
-                    text: elem.letter + ': '+ elem.occurrences
+            $vowelsTop.empty();
+            $.each(counted.vowelsTop3(), function (key, elem) {
+                $vowelsTop.append($('<li>', {
+                    text: elem.letter + ': ' + elem.occurrences
                 }));
             });
 
-            $consonantstop.empty();
-            $.each(counted.consonantstop3(), function(key, elem){
-                $consonantstop.append($('<li>', {
-                    text: elem.letter + ': '+ elem.occurrences
+            $consonantsTop.empty();
+            $.each(counted.consonantsTop3(), function (key, elem) {
+                $consonantsTop.append($('<li>', {
+                    text: elem.letter + ': ' + elem.occurrences
                 }));
             });
         });

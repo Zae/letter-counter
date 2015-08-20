@@ -1,59 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**
- * Created by Ezra on 19/08/15.
- */
-
-var letterCounter = require('../../../public/assets/js/modules/lettercounter');
-
-QUnit.test( "alphabet", function( assert ) {
-    var counted = letterCounter.text('abcdefghijklmnopqrstuvwxyz');
-
-    assert.strictEqual( counted.vowels(), 5, "Passed!" );
-    assert.strictEqual( counted.consonants(), 21, "Passed!" );
-});
-
-QUnit.test( "double-alphabet", function( assert ) {
-    var counted = letterCounter.text('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz');
-
-    assert.strictEqual( counted.vowels(), 10, "Passed!" );
-    assert.strictEqual( counted.consonants(), 42, "Passed!" );
-});
-
-QUnit.test( "multi-alphabet", function( assert ) {
-    var counted = letterCounter.text('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz');
-
-    assert.strictEqual( counted.vowels(), 50, "Passed!" );
-    assert.strictEqual( counted.consonants(), 210, "Passed!" );
-});
-
-QUnit.test( "CapiTalIZatioN", function( assert ) {
-    var counted = letterCounter.text('aBcDEfGHiJkLmNOpqRsTuVWxYz');
-
-    assert.strictEqual( counted.vowels(), 5, "Passed!" );
-    assert.strictEqual( counted.consonants(), 21, "Passed!" );
-});
-
-QUnit.test( "Strange Characters", function( assert ) {
-    var counted = letterCounter.text('aBc%DE!fGH%iJk^Lm*N%OpqR(sTu%^VW(xYz');
-
-    assert.strictEqual( counted.vowels(), 5, "Passed!" );
-    assert.strictEqual( counted.consonants(), 21, "Passed!" );
-});
-
-QUnit.test( "Top3", function( assert ) {
-    var counted = letterCounter.text('eeeeeeeeeeuuuuuiiiooakkkkkkkkkkttttthhhqqz');
-
-    assert.deepEqual( counted.vowelstop3(), [{letter: 'e', occurrences: 10}, {letter: 'u', occurrences: 5}, {letter: 'i', occurrences: 3}], "Passed!" );
-    assert.deepEqual( counted.consonantstop3(), [{letter: 'k', occurrences: 10}, {letter: 't', occurrences: 5}, {letter: 'h', occurrences: 3}], "Passed!" );
-});
-
-QUnit.test( "Top3 - Strange Characters", function( assert ) {
-    var counted = letterCounter.text('eeee*e)eee%eeuuuu^u$iiioo_akk#kkkk*kkkk!tttt+th(hhqqz');
-
-    assert.deepEqual( counted.vowelstop3(), [{letter: 'e', occurrences: 10}, {letter: 'u', occurrences: 5}, {letter: 'i', occurrences: 3}], "Passed!" );
-    assert.deepEqual( counted.consonantstop3(), [{letter: 'k', occurrences: 10}, {letter: 't', occurrences: 5}, {letter: 'h', occurrences: 3}], "Passed!" );
-});
-},{"../../../public/assets/js/modules/lettercounter":3}],2:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12409,66 +12354,119 @@ QUnit.test( "Top3 - Strange Characters", function( assert ) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /**
  * Created by Ezra on 19/08/15.
  */
 
+'use strict';
+
+/*globals module, require */
 var _ = require('lodash');
 
+var counter = function (text) {
+    var  _vowelRgxp = /[euioa]/ig,
+        _consonantRgxp = /[qwrtypsdfghjklzxcvbnm]/ig,
+
+        _vowels = text.match(_vowelRgxp) || [],
+        _consonants = text.match(_consonantRgxp) || [],
+
+        _top3Counter = function (values) {
+            return _.chain(values)
+                .countBy()
+                .map(function (num, key) {
+                    return {letter: key, occurrences: num};
+                })
+                .sortByOrder("occurrences", 'desc')
+                .take(3)
+                .value();
+        };
+
+    return {
+
+        consonants: function () {
+            return _consonants.length;
+        },
+
+        vowels: function () {
+            return _vowels.length;
+        },
+
+        vowelsTop3: function () {
+            return _top3Counter(_vowels);
+        },
+
+        consonantsTop3: function () {
+            return _top3Counter(_consonants);
+        }
+    };
+};
+
 module.exports = {
-    'text': function(text){
+    'text': function (text) {
         return counter(text);
     }
 };
+},{"lodash":1}],3:[function(require,module,exports){
+/**
+ * Created by Ezra on 19/08/15.
+ */
 
-var counter = function(text) {
-    var _consonants = [],
-        _vowels = [],
-        _vowelrgxp = /[euioa]/ig,
-        _consonantrgxp = /[qwrtypsdfghjklzxcvbnm]/ig;
+'use strict';
 
-    (function(text){
-        _.forEach(text.match(_vowelrgxp), function(elem){
-            _vowels.push(elem);
-        });
+/*globals QUnit, require */
 
-        _.forEach(text.match(_consonantrgxp), function(elem){
-            _consonants.push(elem);
-        });
-    }(text.toLowerCase()));
+var letterCounter = require('../../../public/assets/js/modules/lettercounter');
 
-    return {
-        consonants: function(){
-            return _consonants.length;
-        },
-        vowels: function(){
-            return _vowels.length;
-        },
-        vowelstop3: function() {
-            return _.chain(_vowels)
-                .countBy()
-                .map(function(num, key){
-                    return {letter: key, occurrences: num}
-                })
-                .sortByOrder("occurrences", 'desc')
-                .take(3)
-                .value();
-        },
-        consonantstop3: function() {
-            return _.chain(_consonants)
-                .countBy()
-                .map(function(num, key){
-                    return {letter: key, occurrences: num}
-                })
-                .sortByOrder("occurrences", 'desc')
-                .take(3)
-                .value();
-        }
-    }
-};
+QUnit.test( "alphabet", function( assert ) {
+    var counted = letterCounter.text('abcdefghijklmnopqrstuvwxyz');
 
-},{"lodash":2}]},{},[1])
+    assert.strictEqual( counted.vowels(), 5, "Passed!" );
+    assert.strictEqual( counted.consonants(), 21, "Passed!" );
+});
+
+QUnit.test( "double-alphabet", function( assert ) {
+    var counted = letterCounter.text('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz');
+
+    assert.strictEqual( counted.vowels(), 10, "Passed!" );
+    assert.strictEqual( counted.consonants(), 42, "Passed!" );
+});
+
+QUnit.test( "multi-alphabet", function( assert ) {
+    var counted = letterCounter.text('abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz');
+
+    assert.strictEqual( counted.vowels(), 50, "Passed!" );
+    assert.strictEqual( counted.consonants(), 210, "Passed!" );
+});
+
+QUnit.test( "CapiTalIZatioN", function( assert ) {
+    var counted = letterCounter.text('aBcDEfGHiJkLmNOpqRsTuVWxYz');
+
+    assert.strictEqual( counted.vowels(), 5, "Passed!" );
+    assert.strictEqual( counted.consonants(), 21, "Passed!" );
+});
+
+QUnit.test( "Strange Characters", function( assert ) {
+    var counted = letterCounter.text('aBc%DE!fGH%iJk^Lm*N%OpqR(sTu%^VW(xYz');
+
+    assert.strictEqual( counted.vowels(), 5, "Passed!" );
+    assert.strictEqual( counted.consonants(), 21, "Passed!" );
+});
+
+QUnit.test( "Top3", function( assert ) {
+    var counted = letterCounter.text('eeeeeeeeeeuuuuuiiiooakkkkkkkkkkttttthhhqqz');
+
+    assert.deepEqual( counted.vowelsTop3(), [{letter: 'e', occurrences: 10}, {letter: 'u', occurrences: 5}, {letter: 'i', occurrences: 3}], "Passed!" );
+    assert.deepEqual( counted.consonantsTop3(), [{letter: 'k', occurrences: 10}, {letter: 't', occurrences: 5}, {letter: 'h', occurrences: 3}], "Passed!" );
+});
+
+QUnit.test( "Top3 - Strange Characters", function( assert ) {
+    var counted = letterCounter.text('eeee*e)eee%eeuuuu^u$iiioo_akk#kkkk*kkkk!tttt+th(hhqqz');
+
+    assert.deepEqual( counted.vowelsTop3(), [{letter: 'e', occurrences: 10}, {letter: 'u', occurrences: 5}, {letter: 'i', occurrences: 3}], "Passed!" );
+    assert.deepEqual( counted.consonantsTop3(), [{letter: 'k', occurrences: 10}, {letter: 't', occurrences: 5}, {letter: 'h', occurrences: 3}], "Passed!" );
+});
+},{"../../../public/assets/js/modules/lettercounter":2}]},{},[3])
 
 
 //# sourceMappingURL=lettercounter.js.map

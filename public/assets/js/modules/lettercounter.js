@@ -2,56 +2,51 @@
  * Created by Ezra on 19/08/15.
  */
 
+'use strict';
+
+/*globals module, require */
 var _ = require('lodash');
 
-module.exports = {
-    'text': function(text){
-        return counter(text);
-    }
-};
+var counter = function (text) {
+    var  _vowelRgxp = /[euioa]/ig,
+        _consonantRgxp = /[qwrtypsdfghjklzxcvbnm]/ig,
 
-var counter = function(text) {
-    var _consonants = [],
-        _vowels = [],
-        _vowelrgxp = /[euioa]/ig,
-        _consonantrgxp = /[qwrtypsdfghjklzxcvbnm]/ig;
+        _vowels = text.match(_vowelRgxp) || [],
+        _consonants = text.match(_consonantRgxp) || [],
 
-    (function(text){
-        _.forEach(text.match(_vowelrgxp), function(elem){
-            _vowels.push(elem);
-        });
-
-        _.forEach(text.match(_consonantrgxp), function(elem){
-            _consonants.push(elem);
-        });
-    }(text.toLowerCase()));
+        _top3Counter = function (values) {
+            return _.chain(values)
+                .countBy()
+                .map(function (num, key) {
+                    return {letter: key, occurrences: num};
+                })
+                .sortByOrder("occurrences", 'desc')
+                .take(3)
+                .value();
+        };
 
     return {
-        consonants: function(){
+
+        consonants: function () {
             return _consonants.length;
         },
-        vowels: function(){
+
+        vowels: function () {
             return _vowels.length;
         },
-        vowelstop3: function() {
-            return _.chain(_vowels)
-                .countBy()
-                .map(function(num, key){
-                    return {letter: key, occurrences: num}
-                })
-                .sortByOrder("occurrences", 'desc')
-                .take(3)
-                .value();
+
+        vowelsTop3: function () {
+            return _top3Counter(_vowels);
         },
-        consonantstop3: function() {
-            return _.chain(_consonants)
-                .countBy()
-                .map(function(num, key){
-                    return {letter: key, occurrences: num}
-                })
-                .sortByOrder("occurrences", 'desc')
-                .take(3)
-                .value();
+
+        consonantsTop3: function () {
+            return _top3Counter(_consonants);
         }
+    };
+};
+
+module.exports = {
+    'text': function (text) {
+        return counter(text);
     }
 };

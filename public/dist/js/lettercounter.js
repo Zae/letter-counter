@@ -21574,6 +21574,7 @@ return jQuery;
  http://www.tsdme.nl
  ====================================================================== */
 
+/*globals require, global */
 (function () {
 
     'use strict';
@@ -21599,31 +21600,31 @@ return jQuery;
 
     // ======================================================== after load
 
-    jQuery(function($){
+    jQuery(function ($) {
         var $textarea = $('[name="text"]'),
-            $vowelscount = $('.vowels'),
-            $consonantscount = $('.consonants'),
-            $vowelstop = $('.vowelstop3'),
-            $consonantstop = $('.consonantstop3');
+            $vowelsCount = $('.vowels'),
+            $consonantsCount = $('.consonants'),
+            $vowelsTop = $('.vowelstop3'),
+            $consonantsTop = $('.consonantstop3');
 
-        $textarea.on('change keyup keydown focus blur', function(){
+        $textarea.on('change keyup keydown focus blur', function () {
             var $this = $(this),
                 counted = letterCounter.text($this.val());
 
-                $vowelscount.text(counted.vowels());
-                $consonantscount.text(counted.consonants());
+            $vowelsCount.text(counted.vowels());
+            $consonantsCount.text(counted.consonants());
 
-            $vowelstop.empty();
-            $.each(counted.vowelstop3(), function(key, elem){
-                $vowelstop.append($('<li>', {
-                    text: elem.letter + ': '+ elem.occurrences
+            $vowelsTop.empty();
+            $.each(counted.vowelsTop3(), function (key, elem) {
+                $vowelsTop.append($('<li>', {
+                    text: elem.letter + ': ' + elem.occurrences
                 }));
             });
 
-            $consonantstop.empty();
-            $.each(counted.consonantstop3(), function(key, elem){
-                $consonantstop.append($('<li>', {
-                    text: elem.letter + ': '+ elem.occurrences
+            $consonantsTop.empty();
+            $.each(counted.consonantsTop3(), function (key, elem) {
+                $consonantsTop.append($('<li>', {
+                    text: elem.letter + ': ' + elem.occurrences
                 }));
             });
         });
@@ -21639,60 +21640,54 @@ return jQuery;
  * Created by Ezra on 19/08/15.
  */
 
+'use strict';
+
+/*globals module, require */
 var _ = require('lodash');
 
+var counter = function (text) {
+    var  _vowelRgxp = /[euioa]/ig,
+        _consonantRgxp = /[qwrtypsdfghjklzxcvbnm]/ig,
+
+        _vowels = text.match(_vowelRgxp) || [],
+        _consonants = text.match(_consonantRgxp) || [],
+
+        _top3Counter = function (values) {
+            return _.chain(values)
+                .countBy()
+                .map(function (num, key) {
+                    return {letter: key, occurrences: num};
+                })
+                .sortByOrder("occurrences", 'desc')
+                .take(3)
+                .value();
+        };
+
+    return {
+
+        consonants: function () {
+            return _consonants.length;
+        },
+
+        vowels: function () {
+            return _vowels.length;
+        },
+
+        vowelsTop3: function () {
+            return _top3Counter(_vowels);
+        },
+
+        consonantsTop3: function () {
+            return _top3Counter(_consonants);
+        }
+    };
+};
+
 module.exports = {
-    'text': function(text){
+    'text': function (text) {
         return counter(text);
     }
 };
-
-var counter = function(text) {
-    var _consonants = [],
-        _vowels = [],
-        _vowelrgxp = /[euioa]/ig,
-        _consonantrgxp = /[qwrtypsdfghjklzxcvbnm]/ig;
-
-    (function(text){
-        _.forEach(text.match(_vowelrgxp), function(elem){
-            _vowels.push(elem);
-        });
-
-        _.forEach(text.match(_consonantrgxp), function(elem){
-            _consonants.push(elem);
-        });
-    }(text.toLowerCase()));
-
-    return {
-        consonants: function(){
-            return _consonants.length;
-        },
-        vowels: function(){
-            return _vowels.length;
-        },
-        vowelstop3: function() {
-            return _.chain(_vowels)
-                .countBy()
-                .map(function(num, key){
-                    return {letter: key, occurrences: num}
-                })
-                .sortByOrder("occurrences", 'desc')
-                .take(3)
-                .value();
-        },
-        consonantstop3: function() {
-            return _.chain(_consonants)
-                .countBy()
-                .map(function(num, key){
-                    return {letter: key, occurrences: num}
-                })
-                .sortByOrder("occurrences", 'desc')
-                .take(3)
-                .value();
-        }
-    }
-};
-
 },{"lodash":2}]},{},[3])
 
 
