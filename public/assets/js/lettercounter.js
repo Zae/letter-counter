@@ -35,7 +35,14 @@
             $vowelsCount = $('.vowels'),
             $consonantsCount = $('.consonants'),
             $vowelsTop = $('.vowelstop3'),
-            $consonantsTop = $('.consonantstop3');
+            $consonantsTop = $('.consonantstop3'),
+            createList = function ($el, letters) {
+                var html = '';
+                $.each(letters, function (key, elem) {
+                    html += '<li>' + elem.letter + ':' + elem.occurrences + '</li>';
+                });
+                $el.html(html);
+            };
 
         $textarea.on('change keyup keydown focus blur', function () {
             var $this = $(this),
@@ -44,19 +51,9 @@
             $vowelsCount.text(counted.vowels());
             $consonantsCount.text(counted.consonants());
 
-            $vowelsTop.empty();
-            $.each(counted.vowelsTop3(), function (key, elem) {
-                $vowelsTop.append($('<li>', {
-                    text: elem.letter + ': ' + elem.occurrences
-                }));
-            });
+            createList($vowelsTop, counted.vowelsTop3());
+            createList($consonantsTop, counted.consonantsTop3());
 
-            $consonantsTop.empty();
-            $.each(counted.consonantsTop3(), function (key, elem) {
-                $consonantsTop.append($('<li>', {
-                    text: elem.letter + ': ' + elem.occurrences
-                }));
-            });
         });
     });
 
