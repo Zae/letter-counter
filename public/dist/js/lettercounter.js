@@ -21600,7 +21600,7 @@ return jQuery;
 
     // ======================================================== after load
 
-    jQuery(function ($) {
+    $(function ($) {
         var $textarea = $('[name="text"]'),
             $vowelsCount = $('.vowels'),
             $consonantsCount = $('.consonants'),
