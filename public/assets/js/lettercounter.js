@@ -37,7 +37,7 @@
             $vowelsTop = $('.vowelstop3'),
             $consonantsTop = $('.consonantstop3');
 
-        $textarea.on('change keyup keydown focus blur', function () {
+        $textarea.on('change keyup keydown focus blur cut copy paste', function () {
             var $this = $(this),
                 counted = letterCounter.text($this.val());
 
