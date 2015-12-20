@@ -16,7 +16,9 @@ var gulp = require('gulp'),
     minifyCss = require('gulp-minify-css'),
     gulpif = require('gulp-if'),
     partialify = require('partialify'),
-    assign = require('lodash/object/assign');
+    assign = require('lodash/object/assign'),
+    vueify = require('vueify'),
+    babelify = require('babelify');
 
 var config = {
     appName: 'lettercounter',
@@ -43,20 +45,26 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('default'));
 });
 
-gulp.task('browserify', function () {
-    var opts = assign({}, watchify.args, {
-        debug: config.debug,
-        entries: ['./' + config.appPath + 'assets/js/' + config.appName + '.js']
-    });
-    var watcher = watchify(browserify(opts).transform(partialify));
+gulp.task('watchify', function () {
+    let opts = assign({}, watchify.args, {
+            debug: config.debug,
+            entries: ['./' + config.appPath + 'assets/js/' + config.appName + '.js']
+        }),
+        watcher = watchify(browserify(opts)
+            .transform(vueify)
+            .transform(babelify.configure({
+                presets: ["es2015"]
+            }))
+            .transform(partialify)
+        );
 
     function bundle() {
         return watcher.bundle()
             .pipe(source(config.appName + '.js'))
             .pipe(buffer())
-            .pipe(gulpif(config.debug, sourcemaps.init({loadMaps: true})))
+            .pipe(sourcemaps.init({loadMaps: true}))
             .pipe(gulpif(!config.debug, uglify()))
-            .pipe(gulpif(config.debug, sourcemaps.write('.')))
+            .pipe(sourcemaps.write('.'))
             .pipe(gulp.dest(config.appPath + 'dist/js/'))
             .pipe(browserSync.stream());
     }
@@ -67,19 +75,24 @@ gulp.task('browserify', function () {
     watcher.on('log', gutil.log);
 });
 
-gulp.task('browserify2', function () {
-    var opts = assign({}, watchify.args, {
+gulp.task('browserify', function () {
+    let opts = assign({}, watchify.args, {
             debug: config.debug,
             entries: ['./' + config.appPath + 'assets/js/' + config.appName + '.js']
         }),
-        b = browserify(opts).transform(partialify);
+        b = browserify(opts)
+            .transform(partialify)
+            .transform(babelify.configure({
+                presets: ["es2015"]
+            }))
+            .transform(vueify);
 
     return b.bundle()
         .pipe(source(config.appName + '.js'))
         .pipe(buffer())
-        .pipe(gulpif(config.debug, sourcemaps.init({loadMaps: true})))
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(gulpif(!config.debug, uglify()))
-        .pipe(gulpif(config.debug, sourcemaps.write('.')))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(config.appPath + '/dist/js'))
         .pipe(browserSync.stream());
 });
@@ -89,16 +102,16 @@ gulp.task('less', function() {
         .pipe(plumber({
             errorHandler: throwError
         }))
-        .pipe(gulpif(config.debug, sourcemaps.init({loadMaps: true})))
+        .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(less())
         .pipe(autoprefixer({ browsers: ["last 3 versions"] }))
         .pipe(gulpif(!config.debug, minifyCss({ advanced: true })))
-        .pipe(gulpif(config.debug, sourcemaps.write('.')))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(config.appPath + 'dist/css/'))
         .pipe(browserSync.stream());
 });
 
-gulp.task('js', ['browserify']);
+gulp.task('js', ['watchify']);
 gulp.task('css', ['less']);
 
 gulp.task('watch', function() {

@@ -1,65 +1,37 @@
-/*! ======================================================================
- lettercounter
- Designed and developed by Ezra Pool
- http://www.tsdme.nl
- ====================================================================== */
+/**
+ * Created by Ezra on 20/12/15.
+ */
 
-/*globals require, global */
+"use strict";
+
+import Vue from 'vue';
+import counter from './components/counter.vue';
+
 (function () {
 
-    'use strict';
+	// =========================================================== pre-init
 
-    // ====================================================== dependencies
+	// =========================================================== modules
+	Vue.config.debug = false;
 
-    var $ = require('jquery');
+	// =========================================================== main app
 
-    // make dependencies global so modules can use them without having to
-    // call require(x) all over the place (although that would be nicer)
-    global.$ = global.jQuery = $;
+	new Vue({
+		el: 'body',
+		data: {
 
-    // =========================================================== pre-init
+		},
+		events: {
 
-    $('html').removeClass('no-js');
+		},
+		components: {
+			counter: counter
+		},
+		'methods': {
 
-    // =========================================================== modules
+		},
+		compiled() {
 
-    var letterCounter = require('./modules/lettercounter');
-
-    // ======================================================== initialization
-
-
-    // ======================================================== after load
-
-    $(function ($) {
-        var $textarea = $('[name="text"]'),
-            $vowelsCount = $('.vowels'),
-            $consonantsCount = $('.consonants'),
-            $vowelsTop = $('.vowelstop3'),
-            $consonantsTop = $('.consonantstop3'),
-
-            updateList = function ($el, letters) {
-                $el.empty()
-                    .append(
-                        $.map(letters, function (elem) {
-                            return $('<li>', {
-                                text: elem.letter + ': ' + elem.occurrences
-                            });
-                        })
-                    );
-            };
-
-        $textarea.on('change keyup keydown focus blur cut copy paste', function () {
-            var $this = $(this),
-                counted = letterCounter.text($this.val());
-
-            $vowelsCount.text(counted.vowels());
-            $consonantsCount.text(counted.consonants());
-
-            updateList($vowelsTop, counted.vowelsTop3());
-            updateList($consonantsTop, counted.consonantsTop3());
-        });
-    });
-
-    // ===================================================================
-
+		}
+	});
 }());

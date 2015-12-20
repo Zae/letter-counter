@@ -2,13 +2,12 @@
  * Created by Ezra on 19/08/15.
  */
 
-'use strict';
+"use strict";
 
-/*globals module, require */
-var _ = require('lodash');
+import _ from 'lodash';
 
-var counter = function (text) {
-    var  _vowelRgxp = /[euioa]/ig,
+export default function text(text) {
+    let  _vowelRgxp = /[euioa]/ig,
         _consonantRgxp = /[qwrtypsdfghjklzxcvbnm]/ig,
 
         _vowels = text.match(_vowelRgxp) || [],
@@ -26,7 +25,6 @@ var counter = function (text) {
         };
 
     return {
-
         consonants: function () {
             return _consonants.length;
         },
@@ -43,10 +41,4 @@ var counter = function (text) {
             return _top3Counter(_consonants);
         }
     };
-};
-
-module.exports = {
-    'text': function (text) {
-        return counter(text);
-    }
 };
